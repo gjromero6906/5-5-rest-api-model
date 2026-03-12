@@ -39,7 +39,6 @@ module.exports.createFellow = (req, res) => {
 // Update
 module.exports.updateFellow = (req, res) => {
   const { fellowName } = req.body;
-
   if (!fellowName) {
     return res.status(400).send({ message: "Invalid Name" });
   }

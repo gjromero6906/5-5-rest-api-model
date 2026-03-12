@@ -2,7 +2,10 @@ const express = require('express');
 const path = require('path');
 
 const app = express();
-const pathToFrontend = path.join(__dirname, '../frontend');
+let pathToFrontend = path.join(__dirname, '../frontend');
+if (process.env.NODE_ENV === 'production') {
+  pathToFrontend = path.join(__dirname, '../frontend/dist');
+}
 
 // Auto-incrementing ID generator
 let id = 1;
@@ -33,12 +36,12 @@ app.use(express.json());
 // Endpoints
 ////////////////////////
 
-// Get All (Read)
+// Get All (Read) GET /api/fellows
 const listFellows = (req, res) => {
   res.send(fellows);
 };
 
-// Get One (Read)
+// Get One (Read) GET /api/fellows/5
 const findFellow = (req, res) => {
   const { id } = req.params;
   const fellow = fellows.find((fellow) => fellow.id === Number(id));
@@ -49,7 +52,7 @@ const findFellow = (req, res) => {
   res.send(fellow);
 };
 
-// Create
+// Create POST /api/fellows + { "fellowName": "Carmen" }
 const createFellow = (req, res) => {
   const { fellowName } = req.body;
   if (!fellowName) {
@@ -61,18 +64,20 @@ const createFellow = (req, res) => {
   res.status(201).send(newFellow);
 };
 
-// Update
+// Update PATCH /api/fellows/5 + { fellowName: CARMEN! }
 const updateFellow = (req, res) => {
-  const { fellowName } = req.body;
+  const { fellowName } = req.body; // the request has a body with a fellowName
   if (!fellowName) {
-    return res.status(400).send({ message: 'Invalid Name' });
+    return res.status(400).send({ message: 'Name is required' });
   }
 
-  const { id } = req.params;
+  const { id } = req.params; // { postId, commentId }
   const fellow = fellows.find((fellow) => fellow.id === Number(id));
 
   if (!fellow) {
-    return res.status(404).send({ message: `No fellow with the id ${id}` });
+    return res.status(404).send({
+      message: `No fellow with the id ${id}`
+    });
   }
 
   fellow.name = fellowName;
@@ -97,6 +102,9 @@ app.get('/api/fellows/:id', findFellow);
 app.post('/api/fellows', createFellow);
 app.patch('/api/fellows/:id', updateFellow);
 app.delete('/api/fellows/:id', deleteFellow);
+
+// PATCH /api/posts/5/comments/2
+// app.patch('/api/posts/:postId/comments/:commentId', controller)
 
 app.use((req, res) => {
   res.status(404).send({ error: `Not found: ${req.originalUrl}` });

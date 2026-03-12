@@ -1,14 +1,14 @@
 const express = require('express');
 const path = require('path');
 
-// Instead of defining all of the controllers in this file, we've moved them to their own folder
-const fellowControllers = require('./controllers/fellowControllers');
-
 const app = express();
 let pathToFrontend = path.join(__dirname, '../frontend');
 if (process.env.NODE_ENV === 'production') {
   pathToFrontend = path.join(__dirname, '../frontend/dist');
 }
+
+// Instead of defining all of the controllers in this file, we've moved them to their own folder
+const fellowControllers = require('./controllers/fellowControllers');
 
 ////////////////////////
 // Middleware
